@@ -1,0 +1,14 @@
+{
+  "name": "abatar",
+  "version": "0.1.0",
+  "description": "A/B testing minion",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Danny Coates",
+  "license": "MPL 2.0",
+  "dependencies": {
+    "sha1": "1.1.0"
+  }
+}
