@@ -22,7 +22,14 @@ function merge(x ,y) {
 
 AB.create = function (experiments) {
   var ab = new AB()
-  ab.add(experiments)
+  var names = Object.keys(experiments)
+  ab.add(
+    names.map(
+      function (n) {
+        return new Experiment(n, experiments[n])
+      }
+    )
+  )
   return ab
 }
 
