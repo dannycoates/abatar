@@ -1,7 +1,9 @@
 var sha1 = require('sha1')
+var format = require('util').format
 
 function Experiment(name, chooseFn) {
   this.name = name
+  this.logLines = []
   this.active = false
   this.choice = null
   this.chooseFn = chooseFn
@@ -42,14 +44,23 @@ Experiment.prototype.uniformChoice = function (choices, key) {
   return choices[this.hash(key) % choices.length]
 }
 
-Experiment.prototype.choose = function () {
+Experiment.prototype.choose = function (subject) {
   this.active = true
-  this.choice = this.chooseFn.apply(this, arguments)
+  if (this.hasOwnProperty('force')) {
+    this.choice = this.force
+  }
+  else {
+    this.choice = this.chooseFn(subject)
+  }
   return this.choice
 }
 
+Experiment.prototype.log = function () {
+  this.logLines.push(format.apply(null, arguments))
+}
+
 Experiment.prototype.report = function () {
-  return { name: this.name, choice: this.choice }
+  return { name: this.name, choice: this.choice, log: this.logLines }
 }
 
 module.exports = Experiment
