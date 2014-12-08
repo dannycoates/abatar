@@ -1,16 +1,16 @@
 var Experiment = require('./experiment')
+var ExperimentIndex = require('./experimentIndex')
 
 function AB() {
   this.experiments = {}
+  this.experimentsByVariable = new ExperimentIndex()
   this.subject = {}
 }
 
 AB.Experiment = Experiment
 
 function overwrite(x, y) {
-  for (var n in y) {
-    if (y.hasOwnProperty(n)) { x[n] = y[n] }
-  }
+  for (var n in y) { if (y.hasOwnProperty(n)) { x[n] = y[n] } }
 }
 
 function merge(x ,y) {
@@ -23,13 +23,10 @@ function merge(x ,y) {
 AB.create = function (experiments) {
   var ab = new AB()
   var names = Object.keys(experiments)
-  ab.add(
-    names.map(
-      function (n) {
-        return new Experiment(n, experiments[n])
-      }
-    )
-  )
+  for (var i = 0; i < names.length; i++) {
+    var name = names[i]
+    ab.add(new Experiment(name, experiments[name]))
+  }
   return ab
 }
 
@@ -44,34 +41,25 @@ AB.prototype.filter = function (filterFn) {
   return results
 }
 
-AB.prototype.add = function (experiments) {
-  if (Array.isArray(experiments)) {
-    for (var i = 0; i < experiments.length; i++) {
-      var x = experiments[i]
-      this.experiments[x.name] = x
-    }
+AB.prototype.add = function (experiment) {
+  for (var j = 0; j < experiment.outputs.length; j++) {
+    this.experimentsByVariable.add(experiment.outputs[j], experiment)
   }
-  else {
-    this.experiments[experiments.name] = experiments
-  }
+  this.experiments[experiment.name] = experiment
 }
 
-AB.prototype.choose = function (name, subject) {
-  var x = this.experiments[name]
-  if (!x) {
-    return undefined
+AB.prototype.choose = function (variable, subject) {
+  var x = this.experimentsByVariable.get(variable)
+  var output = x && x.choose(merge(this.subject, subject))
+  if (typeof(output) === 'object' && output.hasOwnProperty(variable)) {
+    return output[variable]
   }
-  return x.choose(merge(this.subject, subject))
-}
-
-AB.prototype.isEnabled = function (name, subject) {
-  return this.experiments.hasOwnProperty(name) &&
-   this.choose(name, subject) !== false
+  return output
 }
 
 AB.prototype.report = function () {
   return this.filter(function (x) { return x.active })
-    .map(function (x) { return x.report() })
+             .map(function (x) { return x.report() })
 }
 
 module.exports = AB

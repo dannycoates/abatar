@@ -1,16 +1,14 @@
 var sha1 = require('sha1')
 var format = require('util').format
 
-function Experiment(name, chooseFn) {
+function Experiment(name, spec) {
   this.name = name
   this.logLines = []
   this.active = false
   this.choice = null
-  this.chooseFn = chooseFn
-}
-
-Experiment.create = function (name, chooseFn) {
-  return new Experiment(name, chooseFn)
+  this.groupingFunction = spec.groupingFunction
+  this.inputs = spec.subjectInputs
+  this.outputs = spec.independentOutputs
 }
 
 Experiment.prototype.hash = function (key) {
@@ -44,13 +42,29 @@ Experiment.prototype.uniformChoice = function (choices, key) {
   return choices[this.hash(key) % choices.length]
 }
 
+function checkInputs(inputs, subject) {
+  var missing = null
+  for (var i = 0; i < inputs.length; i++) {
+    var input = inputs[i]
+    if (!subject.hasOwnProperty(input)) {
+      missing = missing || []
+      missing.push(input)
+    }
+  }
+  return missing
+}
+
 Experiment.prototype.choose = function (subject) {
+  var missing = checkInputs(this.inputs, subject)
+  if (missing) {
+    throw new Error(this.name + ' requires subject to have ' + missing.join())
+  }
   this.active = true
   if (this.hasOwnProperty('force')) {
     this.choice = this.force
   }
   else {
-    this.choice = this.chooseFn(subject)
+    this.choice = this.groupingFunction(subject)
   }
   return this.choice
 }
