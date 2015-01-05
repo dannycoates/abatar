@@ -1,4 +1,4 @@
-# Experiment Recipies
+# Experiment Recipes
 
 
 ## Release a new feature
@@ -37,9 +37,11 @@
   subjectAttributes: ['userAgent'],
   independentVariables: ['pCoolFeatureEnabled'],
   eligibilityFunction: function (subject) {
+    // let firefox 36 users use this feature. IRL you'll want a better check
     return subject.userAgent.indexOf('Firefox/36') > -1
   },
   groupingFunction: function (subject) {
+    // all eligible participants get enabled
     return {
       pCoolFeatureEnabled: true
     }
