@@ -7,6 +7,7 @@ test(
     var ab = AB.create([
       {
         name: 'foo',
+        startDate: (new Date()).toISOString(),
         independentVariables: {
           x: 1
         },

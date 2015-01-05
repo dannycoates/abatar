@@ -6,6 +6,7 @@ test(
   function (t) {
     var e = new AB.Experiment(
       {
+        startDate: (new Date()).toISOString(),
         eligibilityFunction: function () { return true }
       }
     )
@@ -19,6 +20,7 @@ test(
   function (t) {
     var e = new AB.Experiment(
       {
+        startDate: (new Date()).toISOString(),
         eligibilityFunction: function () { return false }
       }
     )
@@ -30,7 +32,9 @@ test(
 test(
   'experiments default to an eligibilityFunction that returns false',
   function (t) {
-    var e = new AB.Experiment({})
+    var e = new AB.Experiment({
+      startDate: (new Date()).toISOString()
+    })
     t.equal(e.eligible({}), false, 'default eligibilityFunction returns false')
     t.end()
   }
