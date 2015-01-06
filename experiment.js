@@ -46,6 +46,10 @@ function throwIfMissing(required, checkme, message) {
   }
 }
 
+Experiment.prototype.attributes = function () {
+  return Object.keys(this.subjectAttributes)
+}
+
 /*/
   returns a unique sha1 for this experiment and `subject`
 
@@ -53,7 +57,7 @@ function throwIfMissing(required, checkme, message) {
   without exposing all of the subject attributes themselves
 /*/
 Experiment.prototype.key = function (subject) {
-  var attributes = Object.keys(this.subjectAttributes)
+  var attributes = this.attributes()
   var keyParts = [this.name]
   for (var i = 0; i < attributes.length; i++) {
     keyParts.push(attributes[i])

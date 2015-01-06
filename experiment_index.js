@@ -31,6 +31,19 @@ ExperimentIndex.prototype.filter = function (filterFn) {
   return results
 }
 
+ExperimentIndex.prototype.attributes = function () {
+  var experiments = this.filter()
+  var attributes = {}
+  for (var i = 0; i < experiments.length; i++) {
+    var x = experiments[i]
+    var xa = x.attributes()
+    for (var j = 0; j < xa.length; j++) {
+      attributes[xa[j]] = true
+    }
+  }
+  return Object.keys(attributes)
+}
+
 /*/
   returns an array of all the variable names set by experiments
 /*/

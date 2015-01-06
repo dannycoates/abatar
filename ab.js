@@ -64,6 +64,10 @@ AB.prototype.choose = function (variable, subject, now) {
   return output
 }
 
+AB.prototype.attributes = function () {
+  return this.experiments.attributes()
+}
+
 AB.prototype.variables = function () {
   return this.experiments.variables()
 }
