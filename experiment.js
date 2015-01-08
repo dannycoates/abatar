@@ -1,11 +1,12 @@
 var sha1 = require('sha1')
 var util = require('./util')
+var never = '3000-01-01'
 
 function Experiment(spec) {
   this.name = spec.name
   this.release = parseRelease(spec.release)
-  this.startDate = Date.parse(spec.startDate || '3000-01-01')
-  this.endDate = this.release ? this.release.endDate : Date.parse(spec.endDate || '3000-01-01')
+  this.startDate = Date.parse(spec.startDate || never)
+  this.endDate = this.release ? this.release.endDate : Date.parse(spec.endDate || never)
   this.conclusion = spec.conclusion
   this.active = false
   this.choices = {}
@@ -195,6 +196,35 @@ Experiment.prototype.chooseGrouping = function (subject, now) {
 
 Experiment.prototype.report = function () {
   return { name: this.name, choices: this.choices }
+}
+
+Experiment.prototype.definition = function () {
+  var obj = {
+    name: this.name,
+    startDate: (new Date(this.startDate)).toISOString(),
+    subjectAttributes: this.attributes(),
+    independentVariables: Object.keys(this.independentVariables),
+    conclusion: this.conclusion,
+    eligibilityFunction: null,
+    groupingFunction: null
+  }
+  if (this.release) {
+    obj.release = {
+      startDate: (new Date(this.release.startDate)).toISOString(),
+      endDate: (new Date(this.release.endDate)).toISOString()
+    }
+  }
+  else if (this.endDate !== Date.parse(never)) {
+    obj.endDate = (new Date(this.endDate)).toISOString()
+  }
+  var json = JSON.stringify(obj)
+  return json.replace(
+    /"eligibilityFunction":null/,
+    '"eligibilityFunction":' + this.eligibilityFunction.toString()
+  ).replace(
+    /"groupingFunction":null/,
+    '"groupingFunction":' + this.groupingFunction.toString()
+  )
 }
 
 module.exports = Experiment

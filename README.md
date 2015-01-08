@@ -20,7 +20,7 @@ ab.subject.sessionId = session.id
 
 //...
 
-if (ab.get('niceCaptchaEnabled')) {
+if (ab.choose('niceCaptchaEnabled')) {
   ui.showCaptcha()
 }
 

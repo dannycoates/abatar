@@ -1,14 +1,17 @@
 {
   "name": "abatar",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A/B testing minion",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "tape test/*.js",
+    "bundle": "browserify index.js -o bundle.js -s AB",
+    "postinstall": "npm run bundle"
   },
   "author": "Danny Coates",
   "license": "MPL 2.0",
   "dependencies": {
+    "browserify": "8.0.3",
     "sha1": "1.1.0"
   },
   "devDependencies": {
