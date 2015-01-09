@@ -59,12 +59,17 @@ AB.prototype.choose = function (variable, subject, now) {
   var x = this.enrolled.getFirstLive(variable, now) ||
           this.experiments.getFirstEligible(variable, s, this.enrolled, now) ||
           this.experiments.getReleased(variable, now)
-  var output = x && x.choose(s, now)
-  this.enroll(x, now)
-  if (typeof(output) === 'object' && output.hasOwnProperty(variable)) {
-    return output[variable]
+  try {
+    var output = x && x.choose(s, now)
+    this.enroll(x, now)
+    if (typeof(output) === 'object' && output.hasOwnProperty(variable)) {
+      return output[variable]
+    }
+    return output
   }
-  return output
+  catch (e) {
+    return undefined
+  }
 }
 
 AB.prototype.attributes = function () {
