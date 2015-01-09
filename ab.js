@@ -31,8 +31,11 @@ AB.prototype.add = function (experiment) {
 }
 
 AB.prototype.enroll = function (experiment, now) {
-  if (!experiment) { return this }
   now = now || Date.now()
+  if (typeof(experiment) === 'string') {
+    experiment = this.experiments.get(experiment)
+  }
+  if (!experiment) { return this }
   if (experiment.live(now)) {
     this.enrolled.add(experiment)
   }
