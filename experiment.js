@@ -183,9 +183,6 @@ Experiment.prototype.chooseRelease = function (subject, now) {
 }
 
 Experiment.prototype.chooseGrouping = function (subject, now) {
-  // TODO probably return undefined instead of throwing
-  throwIfMissing(this.subjectAttributes, subject, 'groupingFunction requires')
-
   var choice = this.groupingFunction(subject)
 
   throwIfMissing(this.independentVariables, choice, 'groupingFunction must return')
