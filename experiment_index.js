@@ -89,8 +89,12 @@ ExperimentIndex.prototype.getFirstEligible = function (variable, subject, enroll
 
   for (var i = 0; i < experiments.length; i++) {
     var x = experiments[i]
-    if (noConflicts(x) && x.eligible(subject, now)) {
-      return x
+    try {
+      if (noConflicts(x) && x.eligible(subject, now)) {
+        return x
+      }
+    } catch (e) {
+      // next
     }
   }
 }
