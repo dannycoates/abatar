@@ -3,6 +3,8 @@ abatar A/B testing framework
 
 A workflow for testing and releasing application features.
 
+[![Build Status: Travis](https://travis-ci.org/dannycoates/abatar.svg?branch=master)](https://travis-ci.org/dannycoates/abatar)
+
 # Example
 
 I've got a web app that I'd like to do some A/B testing on.
