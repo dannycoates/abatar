@@ -6,18 +6,22 @@ function AB() {
   this.experiments = new ExperimentIndex()
   this.enrolled = new ExperimentIndex()
   this.subject = {}
+  this.defaults = {}
 }
 
 AB.Experiment = Experiment
 
-AB.create = function (experiments, enrolled, now) {
+AB.create = function (experiments, enrolled, defaults, now) {
   if (!Array.isArray(experiments)) { throw new Error('create only accepts an array') }
   enrolled = enrolled || []
   now = now || Date.now()
 
   var ab = new AB()
+  ab.defaults = defaults || {}
   for (var i = 0; i < experiments.length; i++) {
-    ab.add(new Experiment(experiments[i]))
+    var x = experiments[i]
+    x.defaults = this.defaults
+    ab.add(new Experiment(x))
   }
   for (var i = 0; i < enrolled.length; i++) {
     ab.enroll(ab.experiments.get(enrolled[i]))
@@ -43,8 +47,8 @@ AB.prototype.enroll = function (experiment, now) {
 }
 
 /*/
-  returns a value for the requested `variable` or `undefined` when no experiments
-  can set it, in which case the app should use it's own default value.
+  returns a value for the requested `variable` or the default value set
+  in `this.defaults`
 
   ## Experiment priority
 
@@ -65,11 +69,8 @@ AB.prototype.choose = function (variable, subject, now) {
     if (typeof(output) === 'object' && output.hasOwnProperty(variable)) {
       return output[variable]
     }
-    return output
-  }
-  catch (e) {
-    return undefined
-  }
+  } catch (e) {}
+  return this.defaults[variable]
 }
 
 AB.prototype.attributes = function () {

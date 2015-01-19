@@ -3,18 +3,19 @@ var util = require('./util')
 var never = '3000-01-01'
 
 function Experiment(spec) {
-  this.name = spec.name
   this.release = parseRelease(spec.release)
-  this.startDate = Date.parse(spec.startDate || never)
-  this.endDate = this.release ? this.release.endDate : Date.parse(spec.endDate || never)
-  this.conclusion = spec.conclusion
   this.active = false
   this.choices = {}
+  this.conclusion = spec.conclusion
   this.conflictsWith = {}
-  this.groupingFunction = spec.groupingFunction || function () { return {} }
+  this.defaults = spec.defaults
   this.eligibilityFunction = spec.eligibilityFunction || function () { return false }
-  this.subjectAttributes = parseArrayOrObject(spec.subjectAttributes)
+  this.endDate = this.release ? this.release.endDate : Date.parse(spec.endDate || never)
+  this.groupingFunction = spec.groupingFunction || function () { return {} }
   this.independentVariables = parseArrayOrObject(spec.independentVariables)
+  this.name = spec.name
+  this.startDate = Date.parse(spec.startDate || never)
+  this.subjectAttributes = parseArrayOrObject(spec.subjectAttributes)
 }
 
 /*/

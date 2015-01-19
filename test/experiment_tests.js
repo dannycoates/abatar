@@ -187,3 +187,21 @@ test(
     t.end()
   }
 )
+
+test(
+  'experiment has access to the defaults via this.defaults',
+  function (t) {
+    t.plan(1)
+    var e = new AB.Experiment({
+      independentVariables: ['x'],
+      eligibilityFunction: function () { return true },
+      groupingFunction: function () {
+        t.equal(this.defaults.x, 1, 'default is accessible')
+        return { x: 2 }
+      },
+      defaults: { x: 1 }
+    })
+    e.choose({})
+    t.end()
+  }
+)
