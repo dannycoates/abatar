@@ -11,6 +11,7 @@ function merge(x ,y) {
 
 function missingKeys(required, obj) {
   var requiredKeys = Object.keys(required)
+  if (typeof(obj) !== 'object') { return requiredKeys }
   var missing = null
   for (var i = 0; i < requiredKeys.length; i++) {
     var key = requiredKeys[i]

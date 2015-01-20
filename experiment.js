@@ -159,12 +159,22 @@ Experiment.prototype.uniformChoice = function (choices, key) {
   return choices[this.hash(key) % choices.length]
 }
 
+/*/
+  To be eligible:
+    * the experiment must be live
+    * the subject must have all required attributes
+    * the `eligibilityFunction` must return true
+/*/
 Experiment.prototype.eligible = function (subject, now) {
   return this.live(now || Date.now()) &&
          !util.missingKeys(this.subjectAttributes, subject) &&
-         this.eligibilityFunction(subject)
+         this.eligibilityFunction(subject) === true
 }
 
+/*/
+  Returns an object whose keys match `independentVariables` or throws an Error
+  when a choice can't be made (see `chooseGrouping`).
+/*/
 Experiment.prototype.choose = function (subject, now) {
   now = now || Date.now()
   if (this.release) {
@@ -176,13 +186,29 @@ Experiment.prototype.choose = function (subject, now) {
   return this.chooseGrouping(subject, now)
 }
 
+/*/
+  Hashes the given `subject` to a number between 0 and 1 (as a percent). If
+  the release progress has reached that percentage the conclusion is returned,
+  otherwise the experimental value.
+/*/
 Experiment.prototype.chooseRelease = function (subject, now) {
   now = now || Date.now()
-  var experimental = this.chooseGrouping(subject, now)
   var rank = this.luckyNumber(this.key(subject))
-  return (rank <= this.releaseProgress(now)) ? this.conclusion : experimental
+  return (rank <= this.releaseProgress(now)) ?
+          this.conclusion :
+          this.chooseGrouping(subject, now)
 }
 
+/*/
+  Uses the experiment supplied `groupingFunction` to choose the variables
+  for the given `subject`.
+
+  If the `groupingFunction` throws an error or returns an incomplete set
+  of variables (as defined by `independentVariables`) the caller (most likely
+  `ab.choose`) should catch the error and return a default value.
+
+  `active` will only be set when the `groupingFunction` succeeds.
+/*/
 Experiment.prototype.chooseGrouping = function (subject, now) {
   var choice = this.groupingFunction(subject)
 
@@ -192,10 +218,16 @@ Experiment.prototype.chooseGrouping = function (subject, now) {
   return choice
 }
 
+/*/
+  Returns the `name` and `choices`
+/*/
 Experiment.prototype.report = function () {
   return { name: this.name, choices: this.choices }
 }
 
+/*/
+  Returns the "source code" of this experiment
+/*/
 Experiment.prototype.definition = function () {
   var obj = {
     name: this.name,
