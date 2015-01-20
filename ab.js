@@ -61,21 +61,24 @@ AB.prototype.enroll = function (experiment, now) {
   2. eligible experiments not conflicting with any enrolled experiments
   3. released experiments
 
+  If the chosen experiment can't choose the variable it will throw an Error. The
+  subject will not be enrolled and the default value returned.
+
 /*/
 AB.prototype.choose = function (variable, subject, now) {
   now = now || this.now()
+  var value = this.defaults[variable]
   var s = util.merge(this.subject, subject)
   var x = this.enrolled.getFirstLive(variable, now) ||
           this.experiments.getFirstEligible(variable, s, this.enrolled, now) ||
           this.experiments.getReleased(variable, now)
-  try {
-    var output = x && x.choose(s, now)
-    this.enroll(x, now)
-    if (typeof(output) === 'object' && output.hasOwnProperty(variable)) {
-      return output[variable]
-    }
-  } catch (e) {}
-  return this.defaults[variable]
+  if (x) {
+    try {
+      value = x.choose(s, now)[variable]
+      this.enroll(x, now)
+    } catch (e) {}
+  }
+  return value
 }
 
 AB.prototype.attributes = function () {
