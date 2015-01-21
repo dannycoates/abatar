@@ -45,7 +45,7 @@ AB.prototype.enroll = function (experiment, now) {
     experiment = this.experiments.get(experiment)
   }
   if (!experiment) { return this }
-  if (experiment.live(now)) {
+  if (experiment.isLive(now)) {
     this.enrolled.add(experiment)
   }
   return this

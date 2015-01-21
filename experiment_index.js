@@ -63,10 +63,9 @@ ExperimentIndex.prototype.getByVariable = function (variable) {
   or undefined if none match
 /*/
 ExperimentIndex.prototype.getFirstLive = function (variable, now) {
-  now = now || Date.now()
   var experiments = this.getByVariable(variable)
   for (var i = 0; i < experiments.length; i++) {
-    if (experiments[i].live(now)) {
+    if (experiments[i].isLive(now)) {
       return experiments[i]
     }
   }
@@ -90,12 +89,10 @@ ExperimentIndex.prototype.getFirstEligible = function (variable, subject, enroll
   for (var i = 0; i < experiments.length; i++) {
     var x = experiments[i]
     try {
-      if (noConflicts(x) && x.eligible(subject, now)) {
+      if (noConflicts(x) && x.isEligible(subject, now)) {
         return x
       }
-    } catch (e) {
-      // next
-    }
+    } catch (e) {/* next */}
   }
 }
 
@@ -105,13 +102,11 @@ ExperimentIndex.prototype.getFirstEligible = function (variable, subject, enroll
   or undefined when none match
 /*/
 ExperimentIndex.prototype.getReleased = function (variable, now) {
-  now = now || Date.now()
   var released = this.getByVariable(variable).filter(
     function (x) {
-      return x.endDate < now || (x.release && x.release.startDate < now)
+      return x.isReleased(now)
     }
-  )
-  released.sort(byReleaseDate) // the last one is most recent
+  ).sort(byReleaseDate) // the last one is most recent
   return released[released.length - 1]
 }
 
@@ -164,7 +159,7 @@ ExperimentIndex.prototype.report = function () {
 }
 
 ExperimentIndex.prototype.names = function () {
-  return this.filter().map(function (x) {return x.name })
+  return this.filter().map(function (x) { return x.name })
 }
 
 module.exports = ExperimentIndex

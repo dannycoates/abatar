@@ -52,6 +52,11 @@ Experiment.prototype.attributes = function () {
   return Object.keys(this.subjectAttributes)
 }
 
+Experiment.prototype.isReleased = function (now) {
+  now = now || Date.now()
+  return this.endDate < now || (this.release && this.release.startDate < now)
+}
+
 /*/
   returns a unique sha1 for this experiment and `subject`
 
@@ -72,7 +77,7 @@ Experiment.prototype.key = function (subject) {
   a "live" experiment is one where `now` falls between the startDate
   and endDate.
 /*/
-Experiment.prototype.live = function (now) {
+Experiment.prototype.isLive = function (now) {
   now = now || Date.now()
   return now >= this.startDate && now <= this.endDate
 }
@@ -165,8 +170,8 @@ Experiment.prototype.uniformChoice = function (choices, key) {
     * the subject must have all required attributes
     * the `eligibilityFunction` must return true
 /*/
-Experiment.prototype.eligible = function (subject, now) {
-  return this.live(now || Date.now()) &&
+Experiment.prototype.isEligible = function (subject, now) {
+  return this.isLive(now || Date.now()) &&
          !util.missingKeys(this.subjectAttributes, subject) &&
          this.eligibilityFunction(subject) === true
 }

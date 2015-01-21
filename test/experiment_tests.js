@@ -10,7 +10,7 @@ test(
         eligibilityFunction: function () { return true }
       }
     )
-    t.equal(e.eligible({}), true, 'eligibilityFunction returns true')
+    t.equal(e.isEligible({}), true, 'eligibilityFunction returns true')
     t.end()
   }
 )
@@ -24,7 +24,7 @@ test(
         eligibilityFunction: function () { return false }
       }
     )
-    t.equal(e.eligible({}), false, 'eligibilityFunction returns false')
+    t.equal(e.isEligible({}), false, 'eligibilityFunction returns false')
     t.end()
   }
 )
@@ -35,7 +35,7 @@ test(
     var e = new AB.Experiment({
       startDate: (new Date()).toISOString()
     })
-    t.equal(e.eligible({}), false, 'default eligibilityFunction returns false')
+    t.equal(e.isEligible({}), false, 'default eligibilityFunction returns false')
     t.end()
   }
 )
@@ -47,7 +47,7 @@ test(
       startDate: '2014-12-17',
       eligibilityFunction: function () { return true }
     })
-    t.equal(e.eligible({}, Date.parse('2014-12-16')), false, 'pre-startDate')
+    t.equal(e.isEligible({}, Date.parse('2014-12-16')), false, 'pre-startDate')
     t.end()
   }
 )
@@ -59,7 +59,7 @@ test(
       endDate: '2014-12-17',
       eligibilityFunction: function () { return true }
     })
-    t.equal(e.eligible({}, Date.parse('2014-12-18')), false, 'post-endDate')
+    t.equal(e.isEligible({}, Date.parse('2014-12-18')), false, 'post-endDate')
     t.end()
   }
 )
@@ -86,7 +86,7 @@ test(
       },
       eligibilityFunction: function () { return true }
     })
-    t.equal(e.eligible({}), false, 'subject is ineligible')
+    t.equal(e.isEligible({}), false, 'subject is ineligible')
     t.end()
   }
 )
