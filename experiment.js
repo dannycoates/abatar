@@ -1,4 +1,4 @@
-var sha1 = require('sha1')
+var sha1 = require('js-sha1')
 var util = require('./util')
 var never = '3000-01-01'
 
