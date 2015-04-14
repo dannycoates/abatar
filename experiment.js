@@ -16,6 +16,8 @@ function Experiment(spec) {
   this.name = spec.name
   this.startDate = Date.parse(spec.startDate || never)
   this.subjectAttributes = parseArrayOrObject(spec.subjectAttributes)
+  this.watch = spec.watch || []
+  this.log = []
 }
 
 /*/
@@ -80,6 +82,27 @@ Experiment.prototype.key = function (subject) {
 Experiment.prototype.isLive = function (now) {
   now = now || Date.now()
   return now >= this.startDate && now <= this.endDate
+}
+
+Experiment.prototype.isWatching = function (event) {
+  return this.watch.indexOf(event) > -1
+}
+
+/*/
+  mark an event in the log so it can be reported later
+/*/
+Experiment.prototype.mark = function (event, data, subject, now) {
+  var subjectId = this.key(subject)
+  var mark = {
+    event: event,
+    time: now || Date.now(),
+    experiment: this.name,
+    subjectId: subjectId,
+    choice: this.choices[subjectId],
+    data: data
+  }
+  this.log.push(mark)
+  return mark
 }
 
 /*/
@@ -182,13 +205,19 @@ Experiment.prototype.isEligible = function (subject, now) {
 /*/
 Experiment.prototype.choose = function (subject, now) {
   now = now || Date.now()
+  var choice = null
   if (this.release) {
-    return this.chooseRelease(subject, now)
+    choice = this.chooseRelease(subject, now)
   }
   else if (now > this.endDate){
-    return this.conclusion
+    choice = this.conclusion
   }
-  return this.chooseGrouping(subject, now)
+  else {
+    choice = this.chooseGrouping(subject)
+  }
+  this.choices[this.key(subject)] = choice
+  this.mark('choice', {}, subject, now)
+  return choice
 }
 
 /*/
@@ -197,11 +226,10 @@ Experiment.prototype.choose = function (subject, now) {
   otherwise the experimental value.
 /*/
 Experiment.prototype.chooseRelease = function (subject, now) {
-  now = now || Date.now()
   var rank = this.luckyNumber(this.key(subject))
   return (rank <= this.releaseProgress(now)) ?
           this.conclusion :
-          this.chooseGrouping(subject, now)
+          this.chooseGrouping(subject)
 }
 
 /*/
@@ -214,20 +242,22 @@ Experiment.prototype.chooseRelease = function (subject, now) {
 
   `active` will only be set when the `groupingFunction` succeeds.
 /*/
-Experiment.prototype.chooseGrouping = function (subject, now) {
+Experiment.prototype.chooseGrouping = function (subject) {
   var choice = this.groupingFunction(subject)
-
   throwIfMissing(this.independentVariables, choice, 'groupingFunction must return')
   this.active = true
-  this.choices[this.key(subject)] = choice
   return choice
 }
 
 /*/
-  Returns the `name` and `choices`
+  Returns the `log`
 /*/
 Experiment.prototype.report = function () {
-  return { name: this.name, choices: this.choices }
+  return this.log
+}
+
+Experiment.prototype.truncate = function () {
+  this.log = []
 }
 
 /*/

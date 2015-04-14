@@ -81,6 +81,10 @@ AB.prototype.choose = function (variable, subject, now) {
   return value
 }
 
+AB.prototype.mark = function (event, data, subject) {
+  return this.enrolled.mark(event, data || {}, util.merge(this.subject, subject), this.now())
+}
+
 AB.prototype.attributes = function () {
   return this.experiments.attributes()
 }

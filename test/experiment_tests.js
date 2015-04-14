@@ -130,20 +130,20 @@ test(
 )
 
 test(
-  'active experiments remember their choice',
+  'active experiments mark their choice',
   function (t) {
     var e = new AB.Experiment({
       eligibilityFunction: function () { return true },
       groupingFunction: function () { return { y: 2 } }
     })
     t.equal(e.choose({}).y, 2, 'eligible subject got grouping value')
-    t.equal(e.choices[e.key({})].y, 2, 'experiment remembers the choice')
+    t.equal(e.log[0].choice.y, 2, 'experiment marks the choice')
     t.end()
   }
 )
 
 test(
-  'experiments remember choices for multiple subjects',
+  'experiments mark choices for multiple subjects',
   function (t) {
     var e = new AB.Experiment({
       subjectAttributes: {
@@ -153,9 +153,11 @@ test(
       groupingFunction: function () { return { y: 2 } }
     })
     t.equal(e.choose({ x: 1 }).y, 2, 'eligible subject got grouping value')
-    t.equal(e.choices[e.key({ x: 1 })].y, 2, 'experiment remembers the choice')
+    t.equal(e.log[0].subjectId, e.key({ x: 1 }), 'experiment marks the subjectId')
+    t.equal(e.log[0].choice.y, 2, 'experiment marks the choice')
     t.equal(e.choose({ x: 4 }).y, 2, 'eligible subject got grouping value')
-    t.equal(e.choices[e.key({ x: 4 })].y, 2, 'experiment remembers the choice')
+    t.equal(e.log[1].subjectId, e.key({ x: 4 }), 'experiment marks the subjectId')
+    t.equal(e.log[1].choice.y, 2, 'experiment marks the choice')
     t.end()
   }
 )
@@ -202,6 +204,44 @@ test(
       defaults: { x: 1 }
     })
     e.choose({})
+    t.end()
+  }
+)
+
+test(
+  'a mark gets appended to the log',
+  function (t) {
+    var x = new AB.Experiment({ name: 'one' })
+    x.mark('test', { foo: 1 })
+    t.equal(x.log[0].event, 'test', 'event set')
+    t.equal(x.log[0].data.foo, 1, 'data set')
+    t.end()
+  }
+)
+
+test(
+  'isWatching is true when a watch is set',
+  function (t) {
+    var x = new AB.Experiment({ name: 'one', watch: ['test'] })
+    t.equal(x.isWatching('test'), true)
+    t.equal(x.isWatching('other'), false)
+    t.end()
+  }
+)
+
+test(
+  'when a release is set choose ... TODO',
+  function (t) {
+    var x = new AB.Experiment(
+      {
+        name: 'one',
+        release: {
+          startDate: (new Date()).toISOString(),
+          endDate: (new Date()).toISOString()
+        }
+      }
+    )
+    x.choose({})
     t.end()
   }
 )

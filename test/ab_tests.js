@@ -9,9 +9,7 @@ test(
         {
           name: 'foo',
           startDate: (new Date()).toISOString(),
-          independentVariables: {
-            x: 1
-          },
+          independentVariables: ['x'],
           eligibilityFunction: function () { return true },
           groupingFunction: function () { return { x: 2 } }
         }
@@ -28,9 +26,7 @@ test(
       experiments: [{
         name: 'foo',
         startDate: (new Date()).toISOString(),
-        independentVariables: {
-          x: 1
-        },
+        independentVariables: ['x'],
         eligibilityFunction: function () { return true },
         groupingFunction: function () { return { x: 2 } }
       }],

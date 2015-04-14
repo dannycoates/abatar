@@ -23,9 +23,7 @@ test(
     var x = new Experiment(
       {
         name: 'foo',
-        independentVariables: {
-          bar: 'x'
-        }
+        independentVariables: ['bar']
       }
     )
     var index = new ExperimentIndex()
@@ -41,17 +39,13 @@ test(
     var x1 = new Experiment(
       {
         name: 'foo',
-        independentVariables: {
-          bar: 'x'
-        }
+        independentVariables: ['bar']
       }
     )
     var x2 = new Experiment(
       {
         name: 'baz',
-        independentVariables: {
-          bar: 'y'
-        }
+        independentVariables: ['bar']
       }
     )
     var index = new ExperimentIndex()
@@ -67,17 +61,13 @@ test(
     var x1 = new Experiment(
       {
         name: 'foo',
-        independentVariables: {
-          bar: 'x'
-        }
+        independentVariables: ['bar']
       }
     )
     var x2 = new Experiment(
       {
         name: 'foo',
-        independentVariables: {
-          bar: 'y'
-        }
+        independentVariables: ['bar']
       }
     )
     var index = new ExperimentIndex()
@@ -94,24 +84,23 @@ test(
     var x1 = new Experiment(
       {
         name: 'foo',
-        independentVariables: {
-          bar: 'x'
-        }
+        independentVariables: ['bar'],
+        groupingFunction: function () { return { bar: 'x' }}
       }
     )
     x1.active = true
     var x2 = new Experiment(
       {
         name: 'baz',
-        independentVariables: {
-          bar: 'y'
-        }
+        independentVariables: ['bar']
       }
     )
     var index = new ExperimentIndex()
     index.add(x1).add(x2)
-    t.equal(index.report().length, 1, 'correct number of reports')
-    t.equal(index.report()[0].name, 'foo', 'correct experiment reported')
+    x1.choose('bar')
+    var report = index.report()
+    t.equal(report.length, 1, 'correct number of reports')
+    t.equal(report[0].experiment, 'foo', 'correct experiment reported')
     t.end()
   }
 )
@@ -123,27 +112,21 @@ test(
       {
         name: 'foo',
         startDate: '2014-01-01',
-        independentVariables: {
-          bar: 'x'
-        }
+        independentVariables: ['bar']
       }
     )
     var x2 = new Experiment(
       {
         name: 'baz',
         startDate: '2013-01-01',
-        independentVariables: {
-          bar: 'y'
-        }
+        independentVariables: ['bar']
       }
     )
     var x3 = new Experiment(
       {
         name: 'bae',
         startDate: '2014-01-02',
-        independentVariables: {
-          bar: 'z'
-        }
+        independentVariables: ['bar']
       }
     )
     var index = new ExperimentIndex()
@@ -160,9 +143,7 @@ test(
       {
         name: 'foo',
         startDate: '2014-01-01',
-        independentVariables: {
-          bar: 'x'
-        },
+        independentVariables: ['bar'],
         eligibilityFunction: function () { return true }
       }
     )
@@ -170,18 +151,14 @@ test(
       {
         name: 'baz',
         startDate: '2013-01-01',
-        independentVariables: {
-          bar: 'y'
-        }
+        independentVariables: ['bar']
       }
     )
     var firstEligible = new Experiment(
       {
         name: 'boz',
         startDate: '2013-12-31',
-        independentVariables: {
-          bar: 'y'
-        },
+        independentVariables: ['bar'],
         eligibilityFunction: function () { return true }
       }
     )
@@ -254,27 +231,21 @@ test(
       {
         name: 'foo',
         endDate: '2014-01-01',
-        independentVariables: {
-          bar: 'x'
-        }
+        independentVariables: ['bar']
       }
     )
     var x2 = new Experiment(
       {
         name: 'baz',
         endDate: '2014-12-31',
-        independentVariables: {
-          bar: 'y'
-        }
+        independentVariables: ['bar']
       }
     )
     var x3 = new Experiment(
       {
         name: 'bae',
         endDate: '2014-06-01',
-        independentVariables: {
-          bar: 'z'
-        }
+        independentVariables: ['bar']
       }
     )
     var index = new ExperimentIndex()
@@ -293,17 +264,13 @@ test(
     var x1 = new Experiment(
       {
         name: 'foo',
-        independentVariables: {
-          bar: 'x'
-        }
+        independentVariables: ['bar']
       }
     )
     var x2 = new Experiment(
       {
         name: 'baz',
-        independentVariables: {
-          bar: 'y'
-        }
+        independentVariables: ['bar']
       }
     )
     var index = new ExperimentIndex()

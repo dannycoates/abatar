@@ -151,11 +151,28 @@ ExperimentIndex.prototype.active = function () {
   return this.filter(function (x) { return x.active })
 }
 
+ExperimentIndex.prototype.watching = function (event) {
+  return this.filter(function (x) { return x.isWatching(event) })
+}
+
+ExperimentIndex.prototype.mark = function (event, data, subject, now) {
+  this.watching(event).map(
+    function (x) {
+      return x.mark(event, data, subject, now)
+    }
+  )
+}
+
 /*/
   returns an array of report objects for the active experiments
 /*/
 ExperimentIndex.prototype.report = function () {
-  return this.active().map(function (x) { return x.report() })
+  return this.active().reduce(
+    function (reports, x) {
+      return reports.concat(x.report())
+    },
+    []
+  )
 }
 
 ExperimentIndex.prototype.names = function () {
