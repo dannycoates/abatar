@@ -1,6 +1,6 @@
 {
   "name": "abatar",
-  "version": "0.2.7",
+  "version": "0.3.0",
   "description": "A/B testing minion",
   "main": "index.js",
   "scripts": {
