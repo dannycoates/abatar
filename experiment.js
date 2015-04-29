@@ -66,6 +66,7 @@ Experiment.prototype.isReleased = function (now) {
   without exposing all of the subject attributes themselves
 /*/
 Experiment.prototype.key = function (subject) {
+  subject = subject || {}
   var attributes = this.attributes()
   var keyParts = [this.name]
   for (var i = 0; i < attributes.length; i++) {

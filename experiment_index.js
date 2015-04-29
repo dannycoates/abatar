@@ -3,6 +3,7 @@ var util = require('./util')
 function ExperimentIndex() {
   this.experimentsByName = {}
 	this.experimentsByVariable = {}
+  this.activeSubjectKeys = {}
 }
 
 // sort
@@ -58,17 +59,28 @@ ExperimentIndex.prototype.getByVariable = function (variable) {
 	return this.experimentsByVariable[variable] || []
 }
 
+ExperimentIndex.prototype.getLive = function (variable, now) {
+  return this.getByVariable(variable).filter(
+    function (x) {
+      return x.isLive(now)
+    }
+  )
+}
+
+ExperimentIndex.prototype.getFirstMatch = function (variable, subject, now) {
+  return this.getLive(variable, now).filter(
+    function (x) {
+      return this.activeSubjectKeys[x.key(subject)]
+    }.bind(this)
+  )[0]
+}
+
 /*/
   returns the first active experiment for the given variable and date,
   or undefined if none match
 /*/
 ExperimentIndex.prototype.getFirstLive = function (variable, now) {
-  var experiments = this.getByVariable(variable)
-  for (var i = 0; i < experiments.length; i++) {
-    if (experiments[i].isLive(now)) {
-      return experiments[i]
-    }
-  }
+  return this.getLive(variable, now)[0]
 }
 
 /*/
@@ -79,7 +91,7 @@ ExperimentIndex.prototype.getFirstLive = function (variable, now) {
 ExperimentIndex.prototype.getFirstEligible = function (variable, subject, enrolled, now) {
   subject = subject || {}
   enrolled = enrolled || new ExperimentIndex()
-  function isEnrolled(name) { return !!enrolled.get(name) }
+  function isEnrolled(name) { return !!enrolled.get(name, subject) }
   function noConflicts(x) {
     return Object.keys(x.conflictsWith).filter(isEnrolled).length === 0
   }
@@ -111,10 +123,14 @@ ExperimentIndex.prototype.getReleased = function (variable, now) {
 }
 
 /*/
-  returns the experiment with the given `name`
+  returns the experiment with the given `name` optionally filtered by `subject`
 /*/
-ExperimentIndex.prototype.get = function (name) {
-  return this.experimentsByName[name]
+ExperimentIndex.prototype.get = function (name, subject) {
+  var x = this.experimentsByName[name]
+  if (subject && x && !this.activeSubjectKeys[x.key(subject)]) {
+    return
+  }
+  return x
 }
 
 /*/
@@ -126,7 +142,7 @@ ExperimentIndex.prototype.get = function (name) {
   if the experiement conflicts with any others they
   will be marked as being in conflict
 /*/
-ExperimentIndex.prototype.add = function (experiment) {
+ExperimentIndex.prototype.add = function (experiment, key) {
   if (!experiment || this.get(experiment.name)) {
     return this
   }
@@ -140,6 +156,9 @@ ExperimentIndex.prototype.add = function (experiment) {
     this.experimentsByVariable[variable] = experiments
   }
   this.experimentsByName[experiment.name] = experiment
+  if (key) {
+    this.activeSubjectKeys[key] = true
+  }
   return this
 }
 

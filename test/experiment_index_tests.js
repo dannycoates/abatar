@@ -216,7 +216,7 @@ test(
     index.add(x).add(y).add(z)
     var enrolled = new ExperimentIndex()
     t.equal(index.getFirstEligible('b', {}, enrolled, t0), x, 'initial experiment')
-    enrolled.add(x) // enroll in experiment X
+    enrolled.add(x, x.key()) // enroll in experiment X
     t.equal(index.getFirstEligible('b', {}, enrolled, t2), x, 'consistent with enrollment')
     t.equal(index.getFirstEligible('c', {}, enrolled, t1), undefined, 'Y conflicts with X')
     t.equal(index.getFirstEligible('c', {}, enrolled, t2), z, 'Z does not conflict with X')

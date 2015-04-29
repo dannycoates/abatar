@@ -4,7 +4,7 @@ var util = require('./util')
 
 function AB(options) {
   var experiments = options.experiments || []
-  var enrolled = options.enrolled || []
+  var enrolled = options.enrolled || {}
 
   this.defaults = options.defaults || {}
   this.enrolled = new ExperimentIndex()
@@ -18,8 +18,11 @@ function AB(options) {
     x.defaults = this.defaults
     this.experiments.add(new Experiment(x))
   }
-  for (var i = 0; i < enrolled.length; i++) {
-    this.enroll(this.experiments.get(enrolled[i]))
+  var keys = Object.keys(enrolled)
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i]
+    var x = enrolled[key]
+    this.enroll(this.experiments.get(x), key)
   }
 }
 
@@ -39,14 +42,14 @@ AB.prototype.add = function (experiment) {
   return this
 }
 
-AB.prototype.enroll = function (experiment, now) {
+AB.prototype.enroll = function (experiment, subject, now) {
   now = now || this.now()
   if (typeof(experiment) === 'string') {
     experiment = this.experiments.get(experiment)
   }
   if (!experiment) { return this }
   if (experiment.isLive(now)) {
-    this.enrolled.add(experiment)
+    this.enrolled.add(experiment, experiment.key(subject))
   }
   return this
 }
@@ -69,13 +72,13 @@ AB.prototype.choose = function (variable, subject, now) {
   now = now || this.now()
   var value = this.defaults[variable]
   var s = util.merge(this.subject, subject)
-  var x = this.enrolled.getFirstLive(variable, now) ||
+  var x = this.enrolled.getFirstMatch(variable, s, now) ||
           this.experiments.getFirstEligible(variable, s, this.enrolled, now) ||
           this.experiments.getReleased(variable, now)
   if (x) {
     try {
       value = x.choose(s, now)[variable]
-      this.enroll(x, now)
+      this.enroll(x, s, now)
     } catch (e) {}
   }
   return value
