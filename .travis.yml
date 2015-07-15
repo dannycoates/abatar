@@ -1,8 +1,11 @@
 language: node_js
+
 node_js:
 - '0.10'
+
 env:
   global:
-  - secure: qaSFvSbgXgmyLPx2Bv15PBprDvNcl+X32aQVUjPmEsozQc6xXH6W8GuxozY59LULe8mMfE/8kikoF0XTvreh+jtjixXdAUyPjBhAuitXUxb8BzmaUnYC85x+sRMl1Uqs7yI48hLncNwEEVDnxP7Pxhzisb+XaLg6vbzLmHajdwM=
-  - secure: y4poSkNJgI/1gKNrfqhSW2joDm3rOWWbfL815lvjuRVo4txy3PnLvI/NAO4LPlZPsf0C+l+ot/a5cFnOETkLpwT9HPP/aH0Vtrw74A5OZYYv2IPtYhVwq61ZeH4BAvAP6mt+S8akGQAf/83Y8jjIZWgX5BVw6hqcUzLMe+aGjgw=
+    - SAUCE_USERNAME: fxa-able
+    - SAUCE_ACCESS_KEY: 55549a2f-d6c0-44a7-a175-9aee2772784d
+
 sudo: false
