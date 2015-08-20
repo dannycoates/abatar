@@ -2,7 +2,7 @@ var util = require('./util')
 
 function ExperimentIndex() {
   this.experimentsByName = {}
-	this.experimentsByVariable = {}
+  this.experimentsByVariable = {}
   this.activeSubjectKeys = {}
 }
 
@@ -68,10 +68,12 @@ ExperimentIndex.prototype.getLive = function (variable, now) {
 }
 
 ExperimentIndex.prototype.getFirstMatch = function (variable, subject, now) {
+  var self = this
+
   return this.getLive(variable, now).filter(
     function (x) {
-      return this.activeSubjectKeys[x.key(subject)]
-    }.bind(this)
+      return self.activeSubjectKeys[x.key(subject)]
+    }
   )[0]
 }
 
