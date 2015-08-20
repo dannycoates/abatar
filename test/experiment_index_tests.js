@@ -280,3 +280,33 @@ test(
     t.end()
   }
 )
+
+test(
+  'getFirstMatch returns first match',
+  function (t) {
+    var x1 = new Experiment(
+      {
+        name: 'foo',
+        startDate: '2014-06-01',
+        independentVariables: ['bar'],
+        groupingFunction: function () { return { bar: 'x' }}
+      }
+    )
+    x1.active = true
+    var x2 = new Experiment(
+      {
+        name: 'baz',
+        startDate: '2014-06-01',
+        independentVariables: ['boaz'],
+        groupingFunction: function () { return { boaz: 'x' }}
+      }
+    )
+    x2.active = true
+    now = Date.parse('2015-01-01')
+    var index = new ExperimentIndex()
+    index.add(x1, '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33').add(x2, '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a34')
+    t.equal(index.getFirstMatch('zar', {}, now), undefined, 'no releases')
+    t.notEqual(index.getFirstMatch('bar', {}, now), undefined, 'no releases')
+    t.end()
+  }
+)
