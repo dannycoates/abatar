@@ -11,7 +11,8 @@
     "cover": "test/cover.sh"
   },
   "author": "Danny Coates",
-  "license": "MPL 2.0",
+  "license": "MPL-2.0",
+  "repository": "dannycoates/abatar",
   "dependencies": {
     "js-sha1": "0.2.0"
   },
