@@ -2,12 +2,12 @@ ui: tape
 browsers:
   - name: firefox
     version: 28..latest
+    platform: Windows 7
   - name: chrome
     version: latest
   - name: ie
-    version: latest
+    version: 8..latest
   - name: iphone
     version: latest
   - name: android
     version: latest
-
